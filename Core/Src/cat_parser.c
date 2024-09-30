@@ -41,7 +41,8 @@ static cat_return_state show_fw_version(const struct cat_command *cmd)
 	char str[128];
 	float ver = 0.01;
 	memset(str, 0, sizeof(str));
-	snprintf(str, sizeof(str), "FW_VER: %f", ver);
+	// snprintf(str, sizeof(str), "FW_VER: %f", ver);
+    print_fw_ver(&huart2);
     return 0;
 }
 
@@ -52,9 +53,9 @@ static cat_return_state test_run(const struct cat_command *cmd)
     for (i = 0; i < 5; i++)
     {
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, 1);
-        osDelay(50);
+        osDelay(100);
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, 0);
-        osDelay(50);
+        osDelay(100);
     }
     
     return 0;
