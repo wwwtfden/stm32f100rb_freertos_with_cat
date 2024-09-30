@@ -442,7 +442,7 @@ void StartDefaultTask(void const * argument)
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
 
-    const char *strToPrint = "Sample text\r\n";
+    const char *strToPrint = "Board started!\r\n";
     print_to_UART(strToPrint, &huart2);
     /* Infinite loop */
     for(;;)

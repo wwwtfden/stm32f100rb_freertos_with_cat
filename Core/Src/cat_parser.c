@@ -3,7 +3,6 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdbool.h>
-// #include "board.h"
 #include <assert.h>
 #include "cmsis_os.h"
 // #include "fw_version.h"
@@ -41,7 +40,6 @@ static cat_return_state show_fw_version(const struct cat_command *cmd)
 	char str[128];
 	float ver = 0.01;
 	memset(str, 0, sizeof(str));
-	// snprintf(str, sizeof(str), "FW_VER: %f", ver);
     print_fw_ver(&huart2);
     return 0;
 }
@@ -125,7 +123,7 @@ static int read_char(char *ch)
         	char received = rx_data[cmd_read_pos];
             *ch = received;
             cmd_read_pos++;
-            if (received == '\r') // '\r'
+            if (received == '\n') // '\r'
             {
                 command_ready = 0;
                 // return 0;
@@ -143,38 +141,43 @@ static struct cat_io_interface iface = {
 struct cat_object at;
 void CatParserTask(void const * argument)
 {
-
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
-    /* initializing */
+    /* Launch AT terminal */
     cat_init(&at, &desc, &iface, NULL);
 
     while (1)
     {
         if(quit_flag) break;
-        a = checkHeapSpace(); // debug var for storing free space of heap
+        // a = checkHeapSpace(); // debug var for storing free space of heap
         cat_service(&at);
-
     }
 }
 
 
 void printHelpTask(void const *argument)
 {
-    //parser_buf_reset();
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
     osDelay(1000);
     HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-	// unsigned char help_str[128];
-	// osDelay(1);
-    // for (int i = 0; i < sizeof(cmds) / sizeof(cmds[0]); i++) {
-    // 	memset(help_str, 0, sizeof(help_str));
-    // 	snprintf((char *) help_str, sizeof(help_str), "cmd[%d]: AT%s \r\n", i, cmds[i].name);
-    //     vTaskDelay(1);
-    // }
+
+	// char help_tsk_str[64];
+
+    for (int i = 0; i < sizeof(cmds) / sizeof(cmds[0]); i++)
+    {
+    	// sprintf((char *) help_tsk_str, "cmd[%d]: AT%s \r\n", i, cmds[i].name);
+        // osDelay(100);
+        char* help_tsk_str = pvPortMalloc(128*sizeof(char));
+        // help_tsk_str = "cmd[0]: AT \r\n";
+        memset(help_tsk_str, 0, sizeof(help_tsk_str));
+        sprintf((char *) help_tsk_str, "cmd[%d]: AT%s \r\n", i, cmds[i].name);
+        print_to_UART(help_tsk_str, &huart2);
+        osDelay(100);
+        vPortFree(help_tsk_str);
+    }
+
     osDelay(1);
     vTaskDelete(NULL);
-    // parser_buf_reset();
 }
 
 
