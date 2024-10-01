@@ -31,4 +31,6 @@ size_t checkHeapSpace(void);
 
 void print_fw_ver(UART_HandleTypeDef *uart);
 
+extern QueueHandle_t queue;
+
 #endif

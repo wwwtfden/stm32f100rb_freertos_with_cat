@@ -59,6 +59,8 @@ DMA_HandleTypeDef hdma_memtomem_dma1_channel1;
 osThreadId defaultTaskHandle;
 osThreadId userTaskHandle;
 osThreadId catParserHandle;
+// osThreadId printHelpTaskHandle;
+
 
 /* USER CODE BEGIN PV */
 
@@ -152,6 +154,8 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
   catParserHandle = osThreadCreate(osThread(catTask), NULL);
 
+//   QueueHandle_t queue;
+  queue = xQueueCreate(10, sizeof(TaskHandle_t));
   // osThreadDef(userTask, startUserTask, osPriorityNormal, 0, 128);
  // userTaskHandle = osThreadCreate(osThread(userTask), NULL);
 
@@ -453,6 +457,9 @@ void StartDefaultTask(void const * argument)
             print_to_UART(dbg, &huart2); // debug var for storing free space of heap
             memset(dbg, 0, sizeof(dbg));
         }
+        TaskHandle_t taskHandleReceived;
+        if(xQueueReceive(queue, &taskHandleReceived, portMAX_DELAY) == pdTRUE)
+            vTaskDelete(taskHandleReceived);
 
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }

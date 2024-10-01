@@ -27,3 +27,5 @@ void print_fw_ver(UART_HandleTypeDef *uart)
     osDelay(100);
     print_to_UART(text, &huart2);
 }
+
+QueueHandle_t queue;

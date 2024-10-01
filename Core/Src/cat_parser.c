@@ -10,6 +10,7 @@
 #include "board.h"
 
 osThreadId printHelpTaskHandle;
+
 void printHelpTask(void const *argument);
 
 extern UART_HandleTypeDef huart2;
@@ -186,6 +187,9 @@ void printHelpTask(void const *argument)
     }
 
     osDelay(1);
+    // vTaskDelete(NULL);
+    BaseType_t status;
+    status = xQueueSend(queue, (void*)&printHelpTaskHandle, portMAX_DELAY);
     vTaskDelete(NULL);
 }
 
