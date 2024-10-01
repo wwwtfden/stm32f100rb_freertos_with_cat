@@ -81,7 +81,6 @@ static cat_return_state print_cmd_list(const struct cat_command *cmd)
     // size_t a = checkHeapSpace();
 	osThreadDef(helpTask, printHelpTask, osPriorityNormal, 0, 128);
 	printHelpTaskHandle = osThreadCreate(osThread(helpTask), NULL);
-    // a = checkHeapSpace();
     // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
     // osDelay(1000);
     // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
@@ -143,13 +142,23 @@ void CatParserTask(void const * argument)
 {
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
+    // char dbg[10];
+    // int ab;
+
     /* Launch AT terminal */
     cat_init(&at, &desc, &iface, NULL);
-
     while (1)
     {
         if(quit_flag) break;
-        // a = checkHeapSpace(); // debug var for storing free space of heap
+
+            // a = checkHeapSpace();
+            // if (a != ab)
+            // {
+            //     ab = a;
+            //     sprintf(dbg,"%d\r\n", a);
+            //     print_to_UART(dbg, &huart2); // debug var for storing free space of heap
+            // }
+            
         cat_service(&at);
     }
 }

@@ -2,12 +2,12 @@
 #define INC_BOARD_H
 
 #include "cmsis_os.h"
-//#include <stm32f100xb.h>
 #include "stm32f1xx_hal.h"
 
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdint.h>
 
 #include "FreeRTOS.h"
 #include "task.h"

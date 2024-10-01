@@ -2,11 +2,11 @@
 
 void print_to_UART(const char* str, UART_HandleTypeDef *uart)
 {
-  //  NVIC_DisableIRQ(USART2_IRQn);
+    NVIC_DisableIRQ(USART2_IRQn);
     const char* print = str;
     size_t len = strlen(print);
     HAL_UART_Transmit(uart, (uint8_t*)str, len, HAL_MAX_DELAY);
- //   NVIC_EnableIRQ(USART2_IRQn);
+    NVIC_EnableIRQ(USART2_IRQn);
 }
 
 size_t checkHeapSpace(void)

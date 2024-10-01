@@ -79,7 +79,7 @@ void taskSwitchedIn();
 void taskSwitchedOut();
 
 void StartDefaultTask(void const * argument);
-void startUserTask(void const * argument);
+// void startUserTask(void const * argument);
 
 
 /* USER CODE BEGIN PFP */
@@ -147,14 +147,13 @@ int main(void)
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  osThreadDef(userTask, startUserTask, osPriorityNormal, 0, 128);
-
   osThreadDef(catTask, CatParserTask, osPriorityNormal, 0, 128);
 
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
- // userTaskHandle = osThreadCreate(osThread(userTask), NULL);
-
   catParserHandle = osThreadCreate(osThread(catTask), NULL);
+
+  // osThreadDef(userTask, startUserTask, osPriorityNormal, 0, 128);
+ // userTaskHandle = osThreadCreate(osThread(userTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -401,12 +400,6 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-// void print_to_UART(const char* str, UART_HandleTypeDef *uart)
-// {
-//     const char* print = str;
-//     size_t len = strlen(print);
-//     HAL_UART_Transmit(uart, (uint8_t*)str, len, HAL_MAX_DELAY);
-// }
 
 // void taskSwitchedIn()
 // {
@@ -438,39 +431,50 @@ void vApplicationIdleHook(void)
 void StartDefaultTask(void const * argument)
 {
     /* USER CODE BEGIN 5 */
-    // const char *strToPrint = "Sample text\r\n";
     TickType_t xLastWakeTime;
     xLastWakeTime = xTaskGetTickCount();
 
     const char *strToPrint = "Board started!\r\n";
     print_to_UART(strToPrint, &huart2);
+
+    int heap_val, new_heap_val = 0;
+    char dbg[16];
     /* Infinite loop */
     for(;;)
     {
-        // print_to_UART(strToPrint, &huart2);
         // osDelay(1000);
-        asm volatile("nop");
+        // asm volatile("nop");
+
+        new_heap_val = checkHeapSpace();
+        if (new_heap_val != heap_val)
+        {
+            heap_val = new_heap_val;
+            sprintf(dbg,"free heap: %d\r\n", new_heap_val);
+            print_to_UART(dbg, &huart2); // debug var for storing free space of heap
+            memset(dbg, 0, sizeof(dbg));
+        }
+
         vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
     }
     /* USER CODE END 5 */
 }
 
-void startUserTask(void const * argument)
-{
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
+// void startUserTask(void const * argument)
+// {
+//     TickType_t xLastWakeTime;
+//     xLastWakeTime = xTaskGetTickCount();
 
-    /* Infinite loop */
-    for(;;)
-    {
-        // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-        // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
-        // osDelay(1000);
-        // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
-        osDelay(1000);
-        // vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
-    }
-}
+//     /* Infinite loop */
+//     for(;;)
+//     {
+//         // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+//         // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+//         // osDelay(1000);
+//         // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+//         osDelay(1000);
+//         // vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
+//     }
+// }
 
 /**
   * @brief  Period elapsed callback in non blocking mode
