@@ -1,4 +1,5 @@
 #include "board.h"
+// #include "cat.h"
 
 void print_to_UART(const char* str, UART_HandleTypeDef *uart)
 {
@@ -16,16 +17,21 @@ size_t checkHeapSpace(void)
     return xPortGetMinimumEverFreeHeapSize();
 }
 
-void print_fw_ver(UART_HandleTypeDef *uart)
+cat_return_state print_fw_ver(UART_HandleTypeDef *uart)
 {
     uint8_t major, minor, patch;
     major = BUILD_YEAR - 2000;
     minor = BUILD_MONTH;
     patch = BUILD_DAY;
-    char* text[80];
-    sprintf(text, "Firmware ver: %d.%d.%d\r\n", major, minor, patch);
+    char* text = pvPortMalloc(80*sizeof(char));
+    snprintf(text, 80, "Firmware ver: %d.%d.%d\r\n", major, minor, patch);
     osDelay(100);
     print_to_UART(text, &huart2);
+    vPortFree(text);
+
+    osDelay(1);
+    parser_buf_reset();
+    return 0;
 }
 
 QueueHandle_t queue;

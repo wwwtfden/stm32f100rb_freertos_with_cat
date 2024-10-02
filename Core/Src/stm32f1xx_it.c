@@ -90,7 +90,8 @@ void NMI_Handler(void)
 void HardFault_Handler(void)
 {
   /* USER CODE BEGIN HardFault_IRQn 0 */
-
+    // uint32_t *ptr = (uint32_t*)__get_MSP();
+    // uint32_t cfsr = SCB->CFSR;
   /* USER CODE END HardFault_IRQn 0 */
   while (1)
   {

@@ -9,9 +9,9 @@
 
 #include "board.h"
 
-osThreadId printHelpTaskHandle;
+// osThreadId printHelpTaskHandle;
 
-void printHelpTask(void const *argument);
+// void printHelpTask(void const *argument);
 
 extern UART_HandleTypeDef huart2;
 
@@ -79,12 +79,29 @@ static struct cat_command cmds[] = {
 
 static cat_return_state print_cmd_list(const struct cat_command *cmd)
 {
-    // size_t a = checkHeapSpace();
-	osThreadDef(helpTask, printHelpTask, osPriorityNormal, 0, 128);
-	printHelpTaskHandle = osThreadCreate(osThread(helpTask), NULL);
-    // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-    // osDelay(1000);
-    // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+	// osThreadDef(helpTask, printHelpTask, osPriorityNormal, 0, 128);
+	// printHelpTaskHandle = osThreadCreate(osThread(helpTask), NULL);
+
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+    osDelay(1000);
+    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+
+	// char help_tsk_str[64];
+
+    for (int i = 0; i < sizeof(cmds) / sizeof(cmds[0]); i++)
+    {
+    	// sprintf((char *) help_tsk_str, "cmd[%d]: AT%s \r\n", i, cmds[i].name);
+        // osDelay(100);
+        char* help_tsk_str = pvPortMalloc(128*sizeof(char));
+        // help_tsk_str = "cmd[0]: AT \r\n";
+        memset(help_tsk_str, 0, sizeof(help_tsk_str));
+        sprintf((char *) help_tsk_str, "cmd[%d]: AT%s \r\n", i, cmds[i].name);
+        print_to_UART(help_tsk_str, &huart2);
+        osDelay(100);
+        vPortFree(help_tsk_str);
+    }
+
+    osDelay(1);
 
     parser_buf_reset();
     return 0;
@@ -165,33 +182,14 @@ void CatParserTask(void const * argument)
 }
 
 
-void printHelpTask(void const *argument)
-{
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-    osDelay(1000);
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-
-	// char help_tsk_str[64];
-
-    for (int i = 0; i < sizeof(cmds) / sizeof(cmds[0]); i++)
-    {
-    	// sprintf((char *) help_tsk_str, "cmd[%d]: AT%s \r\n", i, cmds[i].name);
-        // osDelay(100);
-        char* help_tsk_str = pvPortMalloc(128*sizeof(char));
-        // help_tsk_str = "cmd[0]: AT \r\n";
-        memset(help_tsk_str, 0, sizeof(help_tsk_str));
-        sprintf((char *) help_tsk_str, "cmd[%d]: AT%s \r\n", i, cmds[i].name);
-        print_to_UART(help_tsk_str, &huart2);
-        osDelay(100);
-        vPortFree(help_tsk_str);
-    }
-
-    osDelay(1);
-    // vTaskDelete(NULL);
-    BaseType_t status;
-    status = xQueueSend(queue, (void*)&printHelpTaskHandle, portMAX_DELAY);
-    vTaskDelete(NULL);
-}
+// void printHelpTask(void const *argument)
+// {
+//     // osDelay(1);
+//     // vTaskDelete(NULL);
+//     // BaseType_t status;
+//     // status = xQueueSend(queue, (void*)&printHelpTaskHandle, portMAX_DELAY);
+//     // vTaskDelete(NULL);
+// }
 
 
 

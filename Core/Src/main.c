@@ -149,15 +149,12 @@ int main(void)
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  osThreadDef(catTask, CatParserTask, osPriorityNormal, 0, 128);
+  osThreadDef(catTask, CatParserTask, osPriorityNormal, 0, 256);
 
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
   catParserHandle = osThreadCreate(osThread(catTask), NULL);
 
-//   QueueHandle_t queue;
   queue = xQueueCreate(10, sizeof(TaskHandle_t));
-  // osThreadDef(userTask, startUserTask, osPriorityNormal, 0, 128);
- // userTaskHandle = osThreadCreate(osThread(userTask), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */

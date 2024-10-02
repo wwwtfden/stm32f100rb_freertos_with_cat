@@ -12,6 +12,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
+#include "cat.h"
+
 extern UART_HandleTypeDef huart2;
 
 #define BUILD_YEAR (__DATE__[7] - '0' + 10 * (__DATE__[8] - '0') + 100 * (__DATE__[9] - '0') + 1000 * (__DATE__[10] - '0'))
@@ -29,7 +31,7 @@ void print_to_UART(const char* str, UART_HandleTypeDef *uart);
 
 size_t checkHeapSpace(void);
 
-void print_fw_ver(UART_HandleTypeDef *uart);
+cat_return_state print_fw_ver(UART_HandleTypeDef *uart);
 
 extern QueueHandle_t queue;
 
