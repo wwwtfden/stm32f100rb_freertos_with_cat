@@ -4,7 +4,9 @@
 extern osThreadId i2cDefaultTaskHandle;
 
 static void MX_I2C1_Init(void);
+cat_return_state i2c_get_time(const struct cat_command *cmd);
+cat_return_state i2c_set_time(const struct cat_command *cmd);
 
-void i2cGetTimeTask(void const * argument);
+// void i2cGetTimeTask(void const * argument);
 
 #endif

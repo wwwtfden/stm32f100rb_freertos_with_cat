@@ -44,6 +44,7 @@ Core/Src/stm32f1xx_hal_timebase_tim.c \
 Core/cat_lib/cat.c \
 Core/Src/cat_parser.c \
 Core/Src/board.c \
+Core/Src/i2c_func.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_crc.c \
 Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c \

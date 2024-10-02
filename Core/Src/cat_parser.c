@@ -8,6 +8,7 @@
 // #include "fw_version.h"
 
 #include "board.h"
+#include "i2c_func.h"
 
 // osThreadId printHelpTaskHandle;
 
@@ -38,9 +39,9 @@ void parser_buf_reset()
 
 static cat_return_state show_fw_version(const struct cat_command *cmd)
 {
-	char str[128];
-	float ver = 0.01;
-	memset(str, 0, sizeof(str));
+	// char str[128];
+	// float ver = 0.01;
+	// memset(str, 0, sizeof(str));
     print_fw_ver(&huart2);
     return 0;
 }
@@ -71,7 +72,15 @@ static struct cat_command cmds[] = {
         	.name = "+SHOW_FW_VER",
 			.run = show_fw_version,
         },
-                {
+        {
+            .name = "+I2C_GET_TIME",
+            .run = i2c_get_time,
+        },
+        {
+            .name = "+I2C_SET_TIME",
+            .run = i2c_set_time,
+        },
+        {
         	.name = "#TEST",
 			.run = test_run,
         }
