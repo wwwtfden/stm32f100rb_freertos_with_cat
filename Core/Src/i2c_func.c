@@ -46,10 +46,7 @@ static void MX_I2C1_Init(void)
 
 void I2C_GetTime(uint8_t *hours, uint8_t *minutes, uint8_t *seconds)
 {
-
-    uint8_t reg = 0x00;
-
-    HAL_I2C_Master_Transmit(&hi2c1, DS3231_ADDRESS << 1, &reg, 1, HAL_MAX_DELAY);
+    HAL_I2C_Master_Transmit(&hi2c1, DS3231_ADDRESS << 1, 0x00, 1, HAL_MAX_DELAY);
     uint8_t data[3];
 
     HAL_I2C_Master_Receive(&hi2c1, DS3231_ADDRESS << 1, data, sizeof(data), HAL_MAX_DELAY);
@@ -83,6 +80,16 @@ void I2C_SetTime(uint8_t *hours, uint8_t *minutes, uint8_t *seconds)
 
 }
 
+uint8_t dec_to_bcd(uint8_t bcd)
+{
+    return ((bcd / 10) << 4) | (bcd % 10);
+}
+
+uint8_t bcd_to_dec(uint8_t bcd)
+{
+    return (bcd / 16) * 10 + (bcd % 16);
+
+}
 
 // void i2cGetTimeTask(void const * argument)
 // {
@@ -98,19 +105,21 @@ static cat_return_state i2c_set_time(const struct cat_command *cmd,
     const uint8_t *data, const size_t data_size, const size_t args_num)
 {
 	print_to_UART("i2c set test in\r\n", &huart2);
-    // uint8_t hours, minutes, seconds;
     MX_I2C1_Init();
     osDelay(100);
 
-    // hours = 5;
-    // minutes = 11;
-    // seconds = 33;
+    hours = dec_to_bcd(hours);
+    minutes = dec_to_bcd(hours);
+    seconds = dec_to_bcd(hours);
     I2C_SetTime(&hours, &minutes, &seconds);
 
     osDelay(100);
     I2C_GetTime(&hours, &minutes, &seconds);
-    char* text = pvPortMalloc(80*sizeof(char));
-    snprintf(text, 80, "Time: %u.%u.%u\r\n", hours, minutes, seconds);
+    hours = bcd_to_dec(hours);
+    minutes = bcd_to_dec(minutes);
+    seconds = bcd_to_dec(seconds);
+    char* text = pvPortMalloc(30*sizeof(char));
+    snprintf(text, 30, "Time: %02u:%02u:%02u\r\n", hours, minutes, seconds);
     osDelay(100);
     print_to_UART(text, &huart2);
     vPortFree(text);
@@ -126,18 +135,23 @@ static cat_return_state i2c_set_time(const struct cat_command *cmd,
 cat_return_state i2c_get_time(const struct cat_command *cmd)
 {
 	print_to_UART("i2c test in\r\n", &huart2);
-    uint8_t hours, minutes, seconds;
+    // uint8_t hours, minutes, seconds;
     MX_I2C1_Init();
+    // while(1)
+    // {
 
     osDelay(100);
     I2C_GetTime(&hours, &minutes, &seconds);
+    seconds = bcd_to_dec(seconds & 0x7F);
+    minutes = bcd_to_dec(minutes & 0x7F);
+    hours = bcd_to_dec(hours & 0x7F);
 
     char* text = pvPortMalloc(30*sizeof(char));
     snprintf(text, 30, "Time: %02u:%02u:%02u\r\n", hours, minutes, seconds);
     osDelay(100);
     print_to_UART(text, &huart2);
     vPortFree(text);
-
+    // }
     HAL_I2C_DeInit(&hi2c1);
     print_to_UART("i2c test end\r\n", &huart2);
 

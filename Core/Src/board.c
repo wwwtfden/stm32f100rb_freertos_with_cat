@@ -34,9 +34,9 @@ void print_to_UART(const char* str, UART_HandleTypeDef *uart)
 
 size_t checkHeapSpace(void)
 {
-    // size_t xAvailableHeapSpaceInBytes = xPortGetFreeHeapSize();
-    // return xAvailableHeapSpaceInBytes;
-    return xPortGetMinimumEverFreeHeapSize();
+    size_t xAvailableHeapSpaceInBytes = xPortGetFreeHeapSize();
+    return xAvailableHeapSpaceInBytes;
+    // return xPortGetMinimumEverFreeHeapSize();
 }
 
 cat_return_state print_fw_ver(UART_HandleTypeDef *uart)
