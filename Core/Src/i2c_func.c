@@ -8,6 +8,8 @@
 
 I2C_HandleTypeDef hi2c1;
 
+static uint8_t hours, minutes, seconds;
+
 /**
   * @brief I2C1 Initialization Function
   * @param None
@@ -92,16 +94,17 @@ void I2C_SetTime(uint8_t *hours, uint8_t *minutes, uint8_t *seconds)
 //     HAL_I2C_DeInit(&hi2c1);
 // }
 
-cat_return_state i2c_set_time(const struct cat_command *cmd)
+static cat_return_state i2c_set_time(const struct cat_command *cmd,
+    const uint8_t *data, const size_t data_size, const size_t args_num)
 {
 	print_to_UART("i2c set test in\r\n", &huart2);
-    uint8_t hours, minutes, seconds;
+    // uint8_t hours, minutes, seconds;
     MX_I2C1_Init();
     osDelay(100);
 
-    hours = 5;
-    minutes = 11;
-    seconds = 33;
+    // hours = 5;
+    // minutes = 11;
+    // seconds = 33;
     I2C_SetTime(&hours, &minutes, &seconds);
 
     osDelay(100);
@@ -129,8 +132,8 @@ cat_return_state i2c_get_time(const struct cat_command *cmd)
     osDelay(100);
     I2C_GetTime(&hours, &minutes, &seconds);
 
-    char* text = pvPortMalloc(80*sizeof(char));
-    snprintf(text, 80, "Time: %u.%u.%u\r\n", hours, minutes, seconds);
+    char* text = pvPortMalloc(30*sizeof(char));
+    snprintf(text, 30, "Time: %02u:%02u:%02u\r\n", hours, minutes, seconds);
     osDelay(100);
     print_to_UART(text, &huart2);
     vPortFree(text);
@@ -142,3 +145,41 @@ cat_return_state i2c_get_time(const struct cat_command *cmd)
     parser_buf_reset();
     return 0;
 }
+
+static struct cat_variable time_set_vars[]={
+    {
+        .type = CAT_VAR_UINT_DEC,
+        .data = &hours,
+        .data_size = sizeof(hours),
+    },
+    {
+        .type = CAT_VAR_UINT_DEC,
+        .data = &minutes,
+        .data_size = sizeof(minutes),
+    },
+    {
+        .type = CAT_VAR_UINT_DEC,
+        .data = &seconds,
+        .data_size = sizeof(seconds),
+    }
+};
+
+static struct cat_command i2c_cmd[] = {
+        {
+            .name = "+I2C_GET_TIME",
+            .run = i2c_get_time,
+        },
+        {
+            .name = "+I2C_SET_TIME",
+            .run = i2c_set_time,
+            .var = time_set_vars,
+            .var_num = DIM(time_set_vars),
+            .need_all_vars = true,
+            .write = i2c_set_time
+        },
+};
+
+struct cat_command_group i2c_group = {
+    .cmd = i2c_cmd,
+    .cmd_num = DIM(i2c_cmd)
+};

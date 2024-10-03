@@ -46,6 +46,12 @@ static cat_return_state show_fw_version(const struct cat_command *cmd)
     return 0;
 }
 
+static cat_return_state reset_board(const struct cat_command *cmd)
+{
+    HAL_NVIC_SystemReset();
+    return 0;
+}
+
 static cat_return_state test_run(const struct cat_command *cmd)
 {
     parser_buf_reset();
@@ -73,12 +79,8 @@ static struct cat_command cmds[] = {
 			.run = show_fw_version,
         },
         {
-            .name = "+I2C_GET_TIME",
-            .run = i2c_get_time,
-        },
-        {
-            .name = "+I2C_SET_TIME",
-            .run = i2c_set_time,
+            .name = "+RESTART",
+            .run = reset_board,
         },
         {
         	.name = "#TEST",
@@ -109,6 +111,7 @@ static cat_return_state print_cmd_list(const struct cat_command *cmd)
         osDelay(100);
         vPortFree(help_tsk_str);
     }
+    
 
     osDelay(1);
 
@@ -125,7 +128,8 @@ static struct cat_command_group cmd_group = {
 };
 
 static struct cat_command_group *cmd_desc[] = {
-        &cmd_group
+        &cmd_group,
+        &i2c_group
 };
 
 static struct cat_descriptor desc = {
