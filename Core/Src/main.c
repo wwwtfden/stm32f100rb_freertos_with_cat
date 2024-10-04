@@ -169,7 +169,7 @@ int main(void)
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
   catParserHandle = osThreadCreate(osThread(catTask), NULL);
 
-  queue = xQueueCreate(10, sizeof(TaskHandle_t));
+//   queue = xQueueCreate(10, sizeof(TaskHandle_t));
 
 //   xTimer = xTimerCreate("Timer", pdMS_TO_TICKS(1000), pdTRUE, (void*)0, vTimerCallback);
 //   xTimerStart(xTimer, 0);
@@ -435,7 +435,6 @@ static void MX_GPIO_Init(void)
 void vApplicationIdleHook(void)
 {
     __NOP();
-    osDelay(1);
 }
 
 /* USER CODE END 4 */
@@ -466,9 +465,9 @@ void StartDefaultTask(void const * argument)
             print_to_UART(dbg, &huart2); // debug var for storing free space of heap
             memset(dbg, 0, sizeof(dbg));
         }
-        TaskHandle_t taskHandleReceived;
-        if(xQueueReceive(queue, &taskHandleReceived, portMAX_DELAY) == pdTRUE)
-            vTaskDelete(taskHandleReceived);
+        // TaskHandle_t taskHandleReceived;
+        // if(xQueueReceive(queue, &taskHandleReceived, portMAX_DELAY) == pdTRUE)
+        //     vTaskDelete(taskHandleReceived);
             
         osDelay(1);
     }

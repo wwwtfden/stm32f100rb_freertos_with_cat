@@ -56,4 +56,4 @@ cat_return_state print_fw_ver(UART_HandleTypeDef *uart)
     return 0;
 }
 
-QueueHandle_t queue;
+// QueueHandle_t queue;

@@ -183,6 +183,7 @@ void CatParserTask(void const * argument)
         if(quit_flag) break;
         cat_service(&at);
         osDelay(1);
+        // taskYIELD();
     }
 }
 
