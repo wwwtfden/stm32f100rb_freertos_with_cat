@@ -80,26 +80,31 @@ void I2C_SetTime(uint8_t *hours, uint8_t *minutes, uint8_t *seconds)
 
 }
 
-uint8_t dec_to_bcd(uint8_t bcd)
+uint8_t dec_to_bcd(uint8_t num)
 {
-    return ((bcd / 10) << 4) | (bcd % 10);
+    // return ((bcd / 10) << 4) | (bcd % 10);
+    uint8_t bcd = 0;
+    uint8_t shift = 0;
+
+    while (num > 0)
+    {
+        uint8_t digit = num % 10;
+        bcd |= (digit << shift);
+        shift += 4;
+        num /= 10;
+    }
+    return bcd;
+    
 }
 
 uint8_t bcd_to_dec(uint8_t bcd)
 {
-    return (bcd / 16) * 10 + (bcd % 16);
-
+    // return (bcd / 16) * 10 + (bcd % 16);
+    uint8_t dec = 0;
+    dec += (bcd >> 4) * 10;
+    dec += (bcd & 0x0F);
+    return dec;
 }
-
-// void i2cGetTimeTask(void const * argument)
-// {
-//     print_to_UART("i2c test in\r\n", &huart2);
-//     uint8_t hours, minutes, seconds;
-//     MX_I2C1_Init();
-//     osDelay(100);
-//     I2C_GetTime(&hours, &minutes, &seconds);
-//     HAL_I2C_DeInit(&hi2c1);
-// }
 
 static cat_return_state i2c_set_time(const struct cat_command *cmd,
     const uint8_t *data, const size_t data_size, const size_t args_num)
@@ -109,8 +114,8 @@ static cat_return_state i2c_set_time(const struct cat_command *cmd,
     osDelay(100);
 
     hours = dec_to_bcd(hours);
-    minutes = dec_to_bcd(hours);
-    seconds = dec_to_bcd(hours);
+    minutes = dec_to_bcd(minutes);
+    seconds = dec_to_bcd(seconds);
     I2C_SetTime(&hours, &minutes, &seconds);
 
     osDelay(100);
@@ -134,7 +139,7 @@ static cat_return_state i2c_set_time(const struct cat_command *cmd,
 
 cat_return_state i2c_get_time(const struct cat_command *cmd)
 {
-	print_to_UART("i2c test in\r\n", &huart2);
+	print_to_UART("i2c get test in\r\n", &huart2);
     // uint8_t hours, minutes, seconds;
     MX_I2C1_Init();
     // while(1)
@@ -153,8 +158,7 @@ cat_return_state i2c_get_time(const struct cat_command *cmd)
     vPortFree(text);
     // }
     HAL_I2C_DeInit(&hi2c1);
-    print_to_UART("i2c test end\r\n", &huart2);
-
+    print_to_UART("i2c get test end\r\n", &huart2);
     osDelay(1);
     parser_buf_reset();
     return 0;

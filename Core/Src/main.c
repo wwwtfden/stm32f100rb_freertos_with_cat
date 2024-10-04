@@ -26,6 +26,8 @@
 
 #include "board.h"
 
+// #include <timers.h>
+
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -90,6 +92,20 @@ void StartDefaultTask(void const * argument);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+// TimerHandle_t xTimer;
+// static int heap_val, new_heap_val = 0;
+// void vTimerCallback(TimerHandle_t xTimer)
+// {
+//     char dbg[16];
+//     new_heap_val = checkHeapSpace();
+//     if (new_heap_val != heap_val)
+//     {
+//         heap_val = new_heap_val;
+//         sprintf(dbg,"free heap: %d\r\n", new_heap_val);
+//         print_to_UART(dbg, &huart2); // debug var for storing free space of heap
+//         memset(dbg, 0, sizeof(dbg));
+//     }
+// }
 
 /* USER CODE END 0 */
 
@@ -154,6 +170,9 @@ int main(void)
   catParserHandle = osThreadCreate(osThread(catTask), NULL);
 
   queue = xQueueCreate(10, sizeof(TaskHandle_t));
+
+//   xTimer = xTimerCreate("Timer", pdMS_TO_TICKS(1000), pdTRUE, (void*)0, vTimerCallback);
+//   xTimerStart(xTimer, 0);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -431,20 +450,14 @@ void vApplicationIdleHook(void)
 void StartDefaultTask(void const * argument)
 {
     /* USER CODE BEGIN 5 */
-    TickType_t xLastWakeTime;
-    xLastWakeTime = xTaskGetTickCount();
 
     const char *strToPrint = "Board started!\r\n";
     print_to_UART(strToPrint, &huart2);
-
     int heap_val, new_heap_val = 0;
     char dbg[16];
     /* Infinite loop */
     for(;;)
     {
-        // osDelay(1000);
-        // asm volatile("nop");
-
         new_heap_val = checkHeapSpace();
         if (new_heap_val != heap_val)
         {
@@ -456,8 +469,8 @@ void StartDefaultTask(void const * argument)
         TaskHandle_t taskHandleReceived;
         if(xQueueReceive(queue, &taskHandleReceived, portMAX_DELAY) == pdTRUE)
             vTaskDelete(taskHandleReceived);
-
-        vTaskDelayUntil(&xLastWakeTime, pdMS_TO_TICKS(1000));
+            
+        osDelay(1);
     }
     /* USER CODE END 5 */
 }

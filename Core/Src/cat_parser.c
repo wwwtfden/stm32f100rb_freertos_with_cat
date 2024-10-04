@@ -178,19 +178,11 @@ void CatParserTask(void const * argument)
 
     /* Launch AT terminal */
     cat_init(&at, &desc, &iface, NULL);
-    while (1)
+    for(;;)
     {
         if(quit_flag) break;
-
-            // a = checkHeapSpace();
-            // if (a != ab)
-            // {
-            //     ab = a;
-            //     sprintf(dbg,"%d\r\n", a);
-            //     print_to_UART(dbg, &huart2); // debug var for storing free space of heap
-            // }
-            
         cat_service(&at);
+        osDelay(1);
     }
 }
 
