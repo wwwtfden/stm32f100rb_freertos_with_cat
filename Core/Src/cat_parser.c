@@ -55,6 +55,9 @@ static cat_return_state reset_board(const struct cat_command *cmd)
 static cat_return_state test_run(const struct cat_command *cmd)
 {
     parser_buf_reset();
+
+    int* test_heap = pvPortMalloc(128*sizeof(int));
+
     int i;
     for (i = 0; i < 5; i++)
     {
@@ -63,6 +66,8 @@ static cat_return_state test_run(const struct cat_command *cmd)
         HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, 0);
         osDelay(100);
     }
+    vTaskDelay(1000);
+    vPortFree(test_heap);
     
     return 0;
 }
