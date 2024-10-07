@@ -173,17 +173,16 @@ void CatParserTask(void const * argument)
 {
     HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
-    // char dbg[10];
-    // int ab;
-
     /* Launch AT terminal */
     cat_init(&at, &desc, &iface, NULL);
     for(;;)
     {
         if(quit_flag) break;
         cat_service(&at);
-        osDelay(1);
-        // taskYIELD();
+        if (at.state == CAT_STATE_ERROR)
+            parser_buf_reset();
+        // osDelay(1);
+        taskYIELD();
     }
 }
 

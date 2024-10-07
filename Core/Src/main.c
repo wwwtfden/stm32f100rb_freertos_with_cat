@@ -163,7 +163,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityAboveNormal, 0, 128);
   osThreadDef(catTask, CatParserTask, osPriorityNormal, 0, 256);
 
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
@@ -179,6 +179,7 @@ int main(void)
   /* USER CODE END RTOS_THREADS */
 
   /* Start scheduler */
+
   osKernelStart();
 
   /* We should never get here as control is now taken by the scheduler */
@@ -420,17 +421,17 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-// void taskSwitchedIn()
-// {
-//     // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-//     // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
-// }
+void taskSwitchedIn()
+{
+    // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+    // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET);
+}
 
-// void taskSwitchedOut()
-// {
-//     // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
-//     // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
-// }
+void taskSwitchedOut()
+{
+    // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_8);
+    // HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_RESET);
+}
 
 void vApplicationIdleHook(void)
 {
@@ -469,7 +470,8 @@ void StartDefaultTask(void const * argument)
         // if(xQueueReceive(queue, &taskHandleReceived, portMAX_DELAY) == pdTRUE)
         //     vTaskDelete(taskHandleReceived);
             
-        osDelay(1);
+        // osDelay(1);
+        vTaskDelay(1000);
     }
     /* USER CODE END 5 */
 }

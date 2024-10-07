@@ -140,10 +140,7 @@ static cat_return_state i2c_set_time(const struct cat_command *cmd,
 cat_return_state i2c_get_time(const struct cat_command *cmd)
 {
 	print_to_UART("i2c get test in\r\n", &huart2);
-    // uint8_t hours, minutes, seconds;
     MX_I2C1_Init();
-    // while(1)
-    // {
 
     osDelay(100);
     I2C_GetTime(&hours, &minutes, &seconds);
@@ -153,13 +150,10 @@ cat_return_state i2c_get_time(const struct cat_command *cmd)
 
     char* text = pvPortMalloc(30*sizeof(char));
     snprintf(text, 30, "Time: %02u:%02u:%02u\r\n", hours, minutes, seconds);
-    osDelay(100);
     print_to_UART(text, &huart2);
     vPortFree(text);
-    // }
     HAL_I2C_DeInit(&hi2c1);
     print_to_UART("i2c get test end\r\n", &huart2);
-    osDelay(1);
     parser_buf_reset();
     return 0;
 }
