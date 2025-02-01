@@ -66,6 +66,24 @@ osThreadId catParserHandle;
 
 /* USER CODE BEGIN PV */
 
+void HardFault_Handler_C(uint32_t* stack_frame) {
+    // Извлекаем данные из стека
+    uint32_t pc = stack_frame[6];   // PC находится по смещению 0x18
+    uint32_t lr = stack_frame[5];   // LR
+
+    // Анализируем регистры статуса
+    uint32_t cfsr = SCB->CFSR;     // Причина ошибки
+    uint32_t hfsr = SCB->HFSR;     // Статус HardFault
+    uint32_t mmfar = SCB->MMFAR;   // Адрес ошибки памяти
+    uint32_t bfar = SCB->BFAR;     // Адрес ошибки шины
+
+    // Пример вывода через UART
+    // print_to_UART("HardFault! PC: 0x%08X, CFSR: 0x%08X\n", &huart2, pc, cfsr);
+
+    // Остановка системы
+    while (1);
+}
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/

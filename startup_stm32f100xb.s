@@ -114,6 +114,25 @@ Default_Handler:
 Infinite_Loop:
   b Infinite_Loop
   .size Default_Handler, .-Default_Handler
+
+
+    .section    .text.HardFault_Handler
+    .align      2
+    .global     HardFault_Handler
+    .thumb_func
+HardFault_Handler:
+    // Проверяем, какой стек использовался (MSP или PSP)
+    tst     lr, #4                  // Проверка бита 2 LR (EXC_RETURN)
+    ite     eq
+    mrseq   r0, msp                 // Если 0, используем MSP
+    mrsne   r0, psp                 // Если 1, используем PSP
+
+    // Передаем указатель на стек в C-функцию
+    ldr     r1, =HardFault_Handler_C
+    bx      r1
+
+    // Бесконечный цикл на случай возврата (не должен выполняться)
+    b       .
 /******************************************************************************
 *
 * The minimal vector table for a Cortex M3.  Note that the proper constructs
@@ -257,8 +276,8 @@ g_pfnVectors:
   .weak  NMI_Handler
   .thumb_set NMI_Handler,Default_Handler
   
-  .weak  HardFault_Handler
-  .thumb_set HardFault_Handler,Default_Handler
+;   .weak  HardFault_Handler
+;   .thumb_set HardFault_Handler,Default_Handler
   
   .weak  MemManage_Handler
   .thumb_set MemManage_Handler,Default_Handler

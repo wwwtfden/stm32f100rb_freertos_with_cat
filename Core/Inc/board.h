@@ -8,6 +8,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -15,6 +16,8 @@
 #include "cat.h"
 
 #define DIM(x) (sizeof(x) / sizeof((x)[0]))
+
+#define PRINT_BUFFER_SIZE 128
 
 extern UART_HandleTypeDef huart2;
 extern UART_HandleTypeDef huart3;
@@ -33,7 +36,8 @@ void UART3_Init(uint32_t baudrate);
 void UART3_DeInit();
 
 
-void print_to_UART(const char* str, UART_HandleTypeDef *uart);
+// void print_to_UART(const char* str, UART_HandleTypeDef *uart);
+void print_to_UART(const char* format, UART_HandleTypeDef *uart, ...);
 
 size_t checkHeapSpace(void);
 

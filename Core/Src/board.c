@@ -23,12 +23,25 @@ void UART3_DeInit()
   HAL_UART_DeInit(&huart3);
 }
 
-void print_to_UART(const char* str, UART_HandleTypeDef *uart)
-{
+// void print_to_UART(const char* str, UART_HandleTypeDef *uart)
+// {
+//     NVIC_DisableIRQ(USART2_IRQn);
+//     const char* print = str;
+//     size_t len = strlen(print);
+//     HAL_UART_Transmit(uart, (uint8_t*)str, len, HAL_MAX_DELAY);
+//     NVIC_EnableIRQ(USART2_IRQn);
+// }
+
+void print_to_UART(const char* format, UART_HandleTypeDef *uart, ...) {
     NVIC_DisableIRQ(USART2_IRQn);
-    const char* print = str;
-    size_t len = strlen(print);
-    HAL_UART_Transmit(uart, (uint8_t*)str, len, HAL_MAX_DELAY);
+    static char buffer[PRINT_BUFFER_SIZE];
+    va_list args;
+
+    va_start(args, uart); // Инициализация аргументов после 'uart'
+    vsnprintf(buffer, sizeof(buffer), format, args); // Форматирование
+    va_end(args);
+
+    HAL_UART_Transmit(uart, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
     NVIC_EnableIRQ(USART2_IRQn);
 }
 
